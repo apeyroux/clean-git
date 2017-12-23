@@ -1,0 +1,29 @@
+* clean-git
+
+Play with git filter and identity. sample with https://github.com/apeyroux/emacs.nix
+
+*$HOME/.gitconfig*
+
+#+BEGIN_SRC sh
+[filter "identity"]
+	clean = clean-git -c -n Px -f Alexandre -m alex@xxxx.io -o MyORG
+	smudge = clean-git -s -n Px -f Alexandre -m alex@xxxx.io -o MyORG
+	required = true
+#+END_SRC
+
+*.gitattributes* in ours projects :
+
+#+BEGIN_SRC sh
+emacs.el filter=identity
+#+END_SRC
+
+** usage
+
+#+BEGIN_SRC sh
+Missing: (-n|--name NAME) (-f|--firstname FIRSTNAME) (-o|--org ORG)
+(-m|--mail MAIL)
+
+Usage: clean-git (-n|--name NAME) (-f|--firstname FIRSTNAME) (-o|--org ORG)
+                 (-m|--mail MAIL) [-c|--clean] [-s|--smudge]
+  git clean identity
+#+END_SRC
