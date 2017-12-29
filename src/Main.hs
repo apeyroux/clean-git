@@ -3,9 +3,9 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-import Options.Applicative
-import Data.Text as T
 import Data.Semigroup ((<>))
+import Data.Text as T
+import Options.Applicative
 
 data Command = Command
   { name      :: String
@@ -51,8 +51,7 @@ main :: IO ()
 main = cleanid =<< execParser opts
   where
     opts = info (parseExec <**> helper)
-      ( fullDesc
-     <> progDesc "git clean identity")
+           (fullDesc <> progDesc "git clean identity")
 
 cleanid :: Command -> IO ()
 cleanid (Command name fname org mail True False) = getContents
@@ -79,5 +78,5 @@ cleanid (Command name fname org mail False True) = getContents
     smudgeName stdin = return $ T.unpack $ T.replace "@NAME@" (T.pack name) (T.pack stdin)
     smudgeMail stdin = return $ T.unpack $ T.replace "@MAIL@" (T.pack mail) (T.pack stdin)
 
-cleanid (Command name fname org mail False False) = return ()
-cleanid (Command name fname org mail True True) = return ()
+cleanid (Command _ _ _ _ False False) = return ()
+cleanid (Command _ _ _ _ True True) = return ()
