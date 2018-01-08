@@ -12,6 +12,7 @@ data Command = Command
   , firstname :: String
   , org       :: String
   , mail      :: String
+  , twitter   :: String
   , clean     :: Bool
   , smudge    :: Bool
   }
@@ -38,6 +39,11 @@ parseExec = Command
     <> short 'm'
     <> metavar "MAIL"
     <> help "Mail")
+  <*> strOption
+  (long "twitter"
+    <> short 't'
+    <> metavar "TWITTER"
+    <> help "Twitter account")
   <*> switch
   (long "clean"
     <> short 'c'
@@ -54,19 +60,21 @@ main = cleanid =<< execParser opts
            (fullDesc <> progDesc "git clean identity")
 
 cleanid :: Command -> IO ()
-cleanid (Command name fname org mail True False) = getContents
+cleanid (Command name fname org mail twitter True False) = getContents
   >>= cleanOrg
   >>= cleanFirstName
   >>= cleanName
   >>= cleanMail
+  >>= cleanTwitter
   >>= putStr
   where
     cleanOrg stdin = return $ T.unpack $ T.replace (T.pack org) "@ORG@" (T.pack stdin)
     cleanFirstName stdin = return $ T.unpack $ T.replace (T.pack fname) "@FIRSTNAME@" (T.pack stdin)
     cleanName stdin = return $ T.unpack $ T.replace (T.pack name) "@NAME@" (T.pack stdin)
     cleanMail stdin = return $ T.unpack $ T.replace (T.pack mail) "@MAIL@" (T.pack stdin)
+    cleanTwitter stdin = return $ T.unpack $ T.replace (T.pack mail) "@TWITTER@" (T.pack stdin)
 
-cleanid (Command name fname org mail False True) = getContents
+cleanid (Command name fname org mail twitter False True) = getContents
   >>= smudgeOrg
   >>= smudgeFirstName
   >>= smudgeName
@@ -77,6 +85,7 @@ cleanid (Command name fname org mail False True) = getContents
     smudgeFirstName stdin = return $ T.unpack $ T.replace "@FIRSTNAME@" (T.pack fname) (T.pack stdin)
     smudgeName stdin = return $ T.unpack $ T.replace "@NAME@" (T.pack name) (T.pack stdin)
     smudgeMail stdin = return $ T.unpack $ T.replace "@MAIL@" (T.pack mail) (T.pack stdin)
+    smudgeTwitter stdin = return $ T.unpack $ T.replace "@TWITTER@" (T.pack mail) (T.pack stdin)
 
-cleanid (Command _ _ _ _ False False) = return ()
-cleanid (Command _ _ _ _ True True) = return ()
+cleanid (Command _ _ _ _ _ False False) = return ()
+cleanid (Command _ _ _ _ _ True True) = return ()
